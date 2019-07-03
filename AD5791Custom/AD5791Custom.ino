@@ -1,3 +1,6 @@
+//Author: Gokul 
+
+
 #define MISO 22 //SDOUT
 #define MOSI 23 //SDIN
 #define SCK 24 //CLK
