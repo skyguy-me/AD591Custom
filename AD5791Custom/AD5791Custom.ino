@@ -1,17 +1,17 @@
 //Author: Gokul 
 
 
-#define MISO 22 //SDOUT
-#define MOSI 23 //SDIN
-#define SCK 24 //CLK
-#define SS 25 //Sync
-#define LDAC 26 //ldac: 
-#define RESET 27 //reset
-#define CLEAR 28 //clear 
+#define MISO_91 22 //SDOUT
+#define MOSI_91 23 //SDIN
+#define SCK_91 24 //CLK
+#define SS_91 25 //Sync
+#define LDAC_91 26 //ldac: 
+#define RESET_91 27 //reset
+#define CLEAR_91 28 //clear 
 
 
-static const int V_refn =  -15;  
-static const int V_refp =   15; 
+static const int V_refn =  -10;  
+static const int V_refp =  10; 
 
 
 static const uint32_t WRITE_CONTROL_REGISTER_INTIALIZE = 0B001000000000001010000010;
@@ -19,32 +19,32 @@ static const uint32_t WRITE_DAC_REGISTER_INTIALIZE = 0B0001; //(<20) | databits;
 
 
 void setup() {
-  pinMode(MISO,INPUT);
-  pinMode(MOSI,OUTPUT);
-  pinMode(SCK,OUTPUT);
-  pinMode(SS,OUTPUT);
-  pinMode(LDAC,OUTPUT);
-  pinMode(RESET,OUTPUT);
-  pinMode(CLEAR,OUTPUT);
+  pinMode(MISO_91,INPUT);
+  pinMode(MOSI_91,OUTPUT);
+  pinMode(SCK_91,OUTPUT);
+  pinMode(SS_91,OUTPUT);
+  pinMode(LDAC_91,OUTPUT);
+  pinMode(RESET_91,OUTPUT);
+  pinMode(CLEAR_91,OUTPUT);
   
-  digitalWrite(RESET,HIGH);
-  digitalWrite(CLEAR,HIGH);
+  digitalWrite(RESET_91,HIGH);
+  digitalWrite(CLEAR_91,HIGH);
   Serial.begin(9600);
   
- setControlReg();
+ setControlReg_91();
   
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
 
-  sendVoltageDACRegister(-10);
+  sendVoltageDACRegister(0);
 
 }
 
 void sendVoltageDACRegister(double voltage){
 
-  uint32_t dataStream = ((voltage-V_refn)*(1048575))/(V_refp-V_refn);
+  uint32_t dataStream = ((voltage)*(1048575))/(V_refp-V_refn);
   Serial.println(dataStream,BIN);
   
   dataStream = (dataStream) & (0xfffff);
@@ -61,19 +61,19 @@ void sendVoltageDACRegister(double voltage){
   Serial.println(third,BIN);
 
   
-  digitalWrite(SS,LOW);
-  digitalWrite(LDAC,LOW);
+  digitalWrite(SS_91,LOW);
+  digitalWrite(LDAC_91,LOW);
   
   sendyte(first);
   sendyte(second);
   sendyte(third);
 
-  digitalWrite(SS,HIGH);
-  digitalWrite(LDAC,HIGH);
+  digitalWrite(SS_91,HIGH);
+  digitalWrite(LDAC_91,HIGH);
   
 }
 
-void setControlReg(){
+void setControlReg_91(){
   
   uint32_t signalStream = WRITE_CONTROL_REGISTER_INTIALIZE;
   Serial.println(signalStream,BIN);
@@ -86,15 +86,15 @@ void setControlReg(){
   Serial.println(third,BIN);
 
   
-  digitalWrite(SS,LOW);
-  digitalWrite(LDAC,LOW);
+  digitalWrite(SS_91,LOW);
+  digitalWrite(LDAC_91,LOW);
   
   sendyte(first);
   sendyte(second);
   sendyte(third);
 
-  digitalWrite(SS,HIGH);
-  digitalWrite(LDAC,HIGH);
+  digitalWrite(SS_91,HIGH);
+  digitalWrite(LDAC_91,HIGH);
   
 }
 
@@ -103,14 +103,14 @@ void setControlReg(){
 void sendyte(uint8_t stream){
   int i = 0;
   for (i; i<8; i++){
-    digitalWrite(SCK, HIGH);
+    digitalWrite(SCK_91, HIGH);
     if ((stream & 0x80)==0x80){
-      digitalWrite(MOSI, HIGH);
+      digitalWrite(MOSI_91, HIGH);
      
     } else {
-      digitalWrite(MOSI, LOW);
+      digitalWrite(MOSI_91, LOW);
     }
     stream = stream << 1;
-    digitalWrite(SCK, LOW);
+    digitalWrite(SCK_91, LOW);
   }
 }
